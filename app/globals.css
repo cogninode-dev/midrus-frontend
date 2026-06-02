@@ -1,0 +1,232 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ─── Core Brand ─── */
+  --accent: #B9FF66;
+  --accent-hover: #A8F050;
+  --accent-active: #9AE042;
+  --accent-subtle: #E8FFD0;
+  --accent-muted: #F0FFDF;
+
+  /* ─── Neutrals (warm-toned) ─── */
+  --background: #FAFAF8;
+  --surface-1: #FFFFFF;
+  --surface-2: #F5F5F3;
+  --surface-3: #EEEEE9;
+  --foreground: #1A1A2E;
+  --foreground-secondary: #5C5C6F;
+  --foreground-muted: #8E8E9A;
+  --border: #E2E2DC;
+  --border-strong: #CDCDC5;
+
+  /* ─── Semantic ─── */
+  --success: #34C759;
+  --success-bg: #E8F9ED;
+  --warning: #E89B0C;
+  --warning-bg: #FFF8E6;
+  --error: #E5484D;
+  --error-bg: #FEECEE;
+  --info: #3B82F6;
+  --info-bg: #EBF2FF;
+
+  /* ─── Accessible Link Color ─── */
+  --link: #4A7A1E;
+  --link-hover: #3D6518;
+
+  /* ─── Legacy aliases (for shadcn/ui compat) ─── */
+  --card: var(--surface-1);
+  --card-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--surface-1);
+  --accent-foreground: var(--foreground);
+  --input: var(--surface-2);
+  --ring: var(--accent);
+  --radius: 0.5rem;
+
+  /* ─── Chart ─── */
+  --chart-1: #5C5C6F;
+  --chart-2: #B9FF66;
+  --chart-3: #1A1A2E;
+  --chart-4: #34C759;
+  --chart-5: #3B82F6;
+
+  /* ─── Sidebar ─── */
+  --sidebar: var(--surface-1);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--foreground);
+  --sidebar-primary-foreground: var(--surface-1);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--accent);
+
+  /* ─── Extended palette aliases ─── */
+  --color-black: #1A1A2E;
+  --color-white: #FFFFFF;
+  --color-lime: #B9FF66;
+  --color-grey-light: #F5F5F3;
+  --color-grey: #5C5C6F;
+  --color-grey-dark: #1A1A2E;
+}
+
+.dark {
+  --accent: #B9FF66;
+  --accent-hover: #A8F050;
+  --accent-active: #9AE042;
+  --background: #FAFAF8;
+  --foreground: #1A1A2E;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A2E;
+  --primary: #1A1A2E;
+  --primary-foreground: #FFFFFF;
+  --accent-foreground: #1A1A2E;
+}
+
+@theme inline {
+  --font-sans: 'Space Grotesk', 'Space Grotesk Fallback';
+  --font-mono: 'Space Mono', 'Space Mono Fallback';
+
+  /* Core */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+
+  /* Surfaces */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  /* Brand */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-muted: var(--accent-muted);
+
+  /* Semantic */
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+
+  /* Links */
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+
+  /* Legacy (shadcn compat) */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Radii */
+  --radius: var(--radius);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+@keyframes dropdownSlide {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes expandDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 600px; }
+}
+
+/* ─── Base ─── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-background;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-sans font-bold text-foreground;
+  }
+  button {
+    @apply font-sans border-0 cursor-pointer;
+  }
+}
+
+/* ─── Components ─── */
+@layer components {
+  .animate-fadeInUp { animation: fadeInUp 0.6s ease-out; }
+  .animate-fadeIn { animation: fadeIn 0.6s ease-out; }
+  .animate-slideInRight { animation: slideInRight 0.6s ease-out; }
+  .animate-slideInLeft { animation: slideInLeft 0.6s ease-out; }
+  .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .animate-dropdownSlide { animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-scaleIn { animation: scaleIn 0.2s ease-out; }
+  .animate-expandDown { animation: expandDown 0.3s ease-out; overflow: hidden; }
+}
