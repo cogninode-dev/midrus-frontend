@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { apiContact } from '@/lib/api'
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', company: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -18,9 +18,9 @@ export default function ContactSection() {
     setLoading(true)
     setError('')
     try {
-      await apiContact(formData.name, formData.email, formData.message)
+      await apiContact(formData.name, formData.email, formData.message, formData.phone, formData.company)
       setSubmitted(true)
-      setFormData({ name: '', email: '', message: '' })
+      setFormData({ name: '', email: '', phone: '', company: '', message: '' })
       setTimeout(() => setSubmitted(false), 4000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
@@ -123,6 +123,37 @@ export default function ContactSection() {
                   required
                   suppressHydrationWarning
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-semibold mb-2 text-white">
+                    Phone <span className="text-white/50 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+91 98765 43210"
+                    className="w-full px-4 py-3 bg-white text-foreground rounded placeholder-grey focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300 hover:shadow-lg"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="company" className="block text-sm font-semibold mb-2 text-white">
+                    Company <span className="text-white/50 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    placeholder="Your company name"
+                    className="w-full px-4 py-3 bg-white text-foreground rounded placeholder-grey focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300 hover:shadow-lg"
+                  />
+                </div>
               </div>
 
               <div>

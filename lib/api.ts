@@ -219,11 +219,11 @@ export async function apiDeleteInvoice(serviceId: number, invoiceId: number) {
   await request(`/services/${serviceId}/invoices/${invoiceId}/`, { method: 'DELETE' })
 }
 
-export async function apiContact(name: string, email: string, message: string) {
+export async function apiContact(name: string, email: string, message: string, phone?: string, company?: string) {
   const res = await fetch(`${BASE_URL}/contact/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, message }),
+    body: JSON.stringify({ name, email, message, phone: phone || '', company: company || '' }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.detail || 'Failed to send message.')
