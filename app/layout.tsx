@@ -10,21 +10,8 @@ export const metadata: Metadata = {
   title: 'MIDRUS | Accounting, Tax & Company Registration',
   description: 'MIDRUS provides professional accounting, GST & income tax consultancy, and company registration services across India.',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
 }
 
@@ -35,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
-      <body>
+      <body className={spaceGrotesk.className}>
         <AuthProvider>
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}
