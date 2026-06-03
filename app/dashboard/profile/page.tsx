@@ -49,15 +49,19 @@ export default function ProfilePage() {
   }
 
   const handleSave = async () => {
+    if (!formData.name.trim()) { setProfileError('Full name is required.'); return }
     setSavingProfile(true)
     setProfileError('')
+    const website = formData.website.trim()
+      ? formData.website.startsWith('http') ? formData.website : `https://${formData.website}`
+      : ''
     try {
       const updated = await apiUpdateProfile({
         name: formData.name,
         phone: formData.phone,
         company: formData.company,
         address: formData.address,
-        website: formData.website,
+        website,
         tax_id: formData.tax_id,
         gst_number: formData.gst_number,
       })

@@ -110,7 +110,11 @@ export async function apiUpdateProfile(data: Record<string, string>) {
     body: JSON.stringify(data),
   })
   const json = await res.json()
-  if (!res.ok) throw new Error(json.detail || 'Update failed.')
+  if (!res.ok) {
+    const first = Object.entries(json)[0]
+    const msg = first ? `${first[0]}: ${(first[1] as string[])[0]}` : 'Update failed.'
+    throw new Error(msg)
+  }
   return json.user
 }
 
