@@ -128,7 +128,7 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="phone" className="block text-sm font-semibold mb-2 text-white">
-                    Phone <span className="text-white/50 font-normal">(optional)</span>
+                    Phone
                   </label>
                   <input
                     type="tel"
@@ -138,6 +138,7 @@ export default function ContactSection() {
                     onChange={handleChange}
                     placeholder="+91 98765 43210"
                     className="w-full px-4 py-3 bg-white text-foreground rounded placeholder-grey focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300 hover:shadow-lg"
+                    required
                   />
                 </div>
                 <div>
