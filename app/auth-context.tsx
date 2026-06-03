@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { apiLogin, apiRegister, apiLogout, apiGetMe, clearTokens, getAccessToken } from '@/lib/api'
+import { apiLogin, apiVerifyLoginOtp, apiRegister, apiLogout, apiGetMe, clearTokens, getAccessToken } from '@/lib/api'
 
 interface User {
   id: string
@@ -19,7 +19,8 @@ interface AuthContextType {
   user: User | null
   isLoggedIn: boolean
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<{ otp_required?: boolean }>
+  loginVerify: (email: string, otp: string) => Promise<void>
   signup: (email: string, password: string, name: string) => Promise<{ otp_required?: boolean; pending?: boolean; message?: string }>
   logout: () => void
   setUser: (user: User) => void
@@ -44,7 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    const u = await apiLogin(email, password)
+    return await apiLogin(email, password)  // { otp_required: true }
+  }
+
+  const loginVerify = async (email: string, otp: string) => {
+    const u = await apiVerifyLoginOtp(email, otp)
     setUser(u)
     setIsLoggedIn(true)
   }
@@ -60,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, loading, login, signup, logout, setUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, loading, login, loginVerify, signup, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   )

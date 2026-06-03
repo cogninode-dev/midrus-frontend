@@ -70,9 +70,31 @@ export async function apiLogin(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.non_field_errors?.[0] || 'Login failed.')
+  if (!res.ok) throw new Error(data.non_field_errors?.[0] || data.error || 'Login failed.')
+  return data  // { otp_required: true }
+}
+
+export async function apiVerifyLoginOtp(email: string, otp: string) {
+  const res = await fetch(`${BASE_URL}/verify-login-otp/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.non_field_errors?.[0] || 'Invalid OTP.')
   saveTokens(data.tokens.access, data.tokens.refresh)
   return data.user
+}
+
+export async function apiResendLoginOtp(email: string) {
+  const res = await fetch(`${BASE_URL}/resend-login-otp/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to resend OTP.')
+  return data
 }
 
 export async function apiRegister(email: string, password: string, name: string) {
