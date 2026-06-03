@@ -20,7 +20,7 @@ interface AuthContextType {
   isLoggedIn: boolean
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, name: string) => Promise<{ pending: boolean; message: string }>
+  signup: (email: string, password: string, name: string) => Promise<{ otp_required?: boolean; pending?: boolean; message?: string }>
   logout: () => void
   setUser: (user: User) => void
 }

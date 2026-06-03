@@ -83,10 +83,34 @@ export async function apiRegister(email: string, password: string, name: string)
   })
   const data = await res.json()
   if (!res.ok) {
-    const msg = data.email?.[0] || data.password?.[0] || data.non_field_errors?.[0] || 'Signup failed.'
+    const msg = data.email?.[0] || data.password?.[0] || data.non_field_errors?.[0] || data.error || 'Signup failed.'
     throw new Error(msg)
   }
-  // Returns { pending: true, message } — no tokens until admin approves
+  return data  // { otp_required: true }
+}
+
+export async function apiVerifyEmail(email: string, otp: string) {
+  const res = await fetch(`${BASE_URL}/verify-email/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp }),
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    const msg = data.non_field_errors?.[0] || data.otp?.[0] || 'Verification failed.'
+    throw new Error(msg)
+  }
+  return data  // { pending: true }
+}
+
+export async function apiResendOtp(email: string) {
+  const res = await fetch(`${BASE_URL}/resend-otp/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to resend OTP.')
   return data
 }
 
