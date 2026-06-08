@@ -4,7 +4,7 @@ import { useAuth } from '@/app/auth-context'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, ChevronDown, User, LogOut, ClipboardList, HelpCircle, Command } from 'lucide-react'
+import { Search, ChevronDown, User, LogOut, ClipboardList, HelpCircle, Command, CreditCard } from 'lucide-react'
 import Image from 'next/image'
 
 export default function DashboardNav() {
@@ -79,6 +79,7 @@ export default function DashboardNav() {
     const q = searchQuery.toLowerCase().trim()
     if (q.includes('service')) router.push('/dashboard/services')
     else if (q.includes('profile') || q.includes('account')) router.push('/dashboard/profile')
+    else if (q.includes('payment') || q.includes('pay') || q.includes('invoice')) router.push('/dashboard/payment')
     else if (q.includes('dashboard') || q.includes('home')) router.push('/dashboard')
     setSearchQuery('')
     searchRef.current?.blur()
@@ -87,6 +88,7 @@ export default function DashboardNav() {
   const menuItems = [
     { label: 'View Profile', href: '/dashboard/profile', icon: User },
     { label: 'My Services', href: '/dashboard/services', icon: ClipboardList },
+    { label: 'Make Payment', href: '/dashboard/payment', icon: CreditCard },
     { label: 'Support', href: '#', icon: HelpCircle },
   ]
 
@@ -133,6 +135,16 @@ export default function DashboardNav() {
             }`}
           >
             Profile
+          </Link>
+          <Link
+            href="/dashboard/payment"
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/40 ${
+              isActive('/dashboard/payment')
+                ? 'bg-accent text-foreground shadow-sm'
+                : 'text-foreground-secondary hover:text-foreground hover:bg-surface-3'
+            }`}
+          >
+            Payment
           </Link>
         </div>
 
@@ -265,6 +277,16 @@ export default function DashboardNav() {
             }`}
           >
             Profile
+          </Link>
+          <Link
+            href="/dashboard/payment"
+            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+              isActive('/dashboard/payment')
+                ? 'bg-accent text-foreground'
+                : 'bg-surface-2 text-foreground-secondary hover:bg-surface-3'
+            }`}
+          >
+            Payment
           </Link>
         </div>
       </div>

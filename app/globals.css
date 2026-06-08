@@ -86,7 +86,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Space Grotesk', 'Space Grotesk Fallback';
+  --font-sans: 'Inter', 'Inter Fallback';
   --font-mono: 'Space Mono', 'Space Mono Fallback';
 
   /* Core */
@@ -211,7 +211,7 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
   h1, h2, h3 {
-    @apply font-sans font-bold text-foreground;
+    @apply font-sans font-bold;
   }
   button {
     @apply font-sans border-0 cursor-pointer;

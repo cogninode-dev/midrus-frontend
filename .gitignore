@@ -43,6 +43,10 @@ CLAUDE.md
 # Backend (separate repo)
 backend/
 
+# Local payment assets (served via public/ instead)
+43335752009@sbi.pdf
+backend copy/
+
 # Misc
 __v0_runtime_loader.js
 __v0_devtools.tsx

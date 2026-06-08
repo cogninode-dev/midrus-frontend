@@ -10,11 +10,11 @@ export default function Navigation() {
   const { isLoggedIn } = useAuth()
 
   const navLinks = [
-    { label: 'Services', href: '#services' },
-    { label: 'Our Process', href: '#process' },
-    { label: 'Team', href: '#team' },
-    { label: 'Testimonials', href: '#testimonials' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Services', href: '/services' },
+    { label: 'Our Process', href: '/process' },
+    { label: 'Team', href: '/team' },
+    { label: 'Testimonials', href: '/#testimonials' },
+    { label: 'Contact', href: '/contact' },
   ]
 
   return (

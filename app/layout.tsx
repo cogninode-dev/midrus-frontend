@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/app/auth-context'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
   title: 'MIDRUS | Accounting, Tax & Company Registration',
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
-      <body className={spaceGrotesk.className}>
+      <body className={inter.className}>
         <AuthProvider>
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { DecorativeCircle } from './decorative-shapes'
 
 interface Service {
@@ -7,38 +8,51 @@ interface Service {
   title: string
   description: string
   icon: string
+  href: string
 }
 
 const services: Service[] = [
   {
     id: 'accounting',
     title: 'Accounting & Bookkeeping',
-    description: 'Comprehensive accounting and bookkeeping services including financial statements, payroll management, and reconciliation to keep your business finances accurate and up to date.',
+    description: 'Comprehensive virtual bookkeeping across Tally ERP, Xero, Zoho, MYOB & MS Dynamics — accurate, precise, and timely financial statements with IT-enhanced reporting.',
     icon: '📒',
+    href: '/services/accounting',
   },
   {
     id: 'tax',
     title: 'GST & Income Tax Consultancy',
     description: 'Expert GST filing, income tax returns, and tax planning for individuals and businesses. We ensure full compliance while maximizing deductions and minimizing liabilities.',
     icon: '🧾',
+    href: '/services/tax',
   },
   {
     id: 'registration',
     title: 'Company Registration',
     description: 'End-to-end assistance with company incorporation, MCA filings, GST registration, and all legal formalities to get your business up and running quickly.',
     icon: '🏢',
+    href: '/services/registration',
+  },
+  {
+    id: 'audit',
+    title: 'Audit & Assurance',
+    description: 'Statutory audit, internal audit, tax audit, GST audit, and forensic investigations conducted by ICAI-registered Chartered Accountants — objective, thorough, and deadline-driven.',
+    icon: '🔍',
+    href: '/services/audit',
   },
   {
     id: 'financial-advisory',
     title: 'Financial Advisory Services',
     description: 'Strategic financial planning, investment guidance, cash flow management, and business forecasting to help you make informed decisions and achieve long-term financial goals.',
     icon: '💰',
+    href: '/services/financial-advisory',
   },
   {
     id: 'manpower',
     title: 'Manpower Supply Services',
     description: 'Reliable staffing and manpower solutions for businesses of all sizes. We connect you with skilled, verified professionals across accounting, administration, and operations roles.',
     icon: '👥',
+    href: '/services/manpower',
   },
 ]
 
@@ -59,8 +73,9 @@ export default function Services() {
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, idx) => (
-            <div
+            <Link
               key={service.id}
+              href={service.href}
               className="group relative p-6 md:p-8 bg-grey-light rounded-lg border-2 border-border hover:border-accent hover:bg-accent hover:text-foreground transition-all duration-300 cursor-pointer hover:shadow-lg hover:scale-105 animate-fadeInUp"
               style={{ animationDelay: `${idx * 0.1}s` }}
             >
@@ -82,7 +97,7 @@ export default function Services() {
 
               {/* Background accent circle */}
               <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-accent opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-300"></div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

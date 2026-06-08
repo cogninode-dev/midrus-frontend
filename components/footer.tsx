@@ -57,23 +57,23 @@ export default function Footer() {
             <h4 className="font-bold mb-4 text-white">Company</h4>
             <ul className="space-y-3 text-sm text-grey-light">
               <li>
-                <Link href="#about" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
-                  About Us
+                <Link href="/team" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                  Our Team
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
-                  Services
+                <Link href="/process" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                  Our Process
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
-                  Blog
+                <Link href="/contact" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                  Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
-                  Careers
+                <Link href="/#testimonials" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                  Testimonials
                 </Link>
               </li>
             </ul>
@@ -84,27 +84,32 @@ export default function Footer() {
             <h4 className="font-bold mb-4 text-white">Services</h4>
             <ul className="space-y-3 text-sm text-grey-light">
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link href="/services/accounting" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
                   Accounting & Bookkeeping
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link href="/services/tax" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
                   GST & Income Tax
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link href="/services/registration" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
                   Company Registration
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link href="/services/audit" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                  Audit & Assurance
+                </Link>
+              </li>
+              <li>
+                <Link href="/services/financial-advisory" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
                   Financial Advisory
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link href="/services/manpower" className="hover:text-accent transition-colors duration-300 hover:translate-x-1 inline-block">
                   Manpower Supply
                 </Link>
               </li>

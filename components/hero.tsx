@@ -60,7 +60,7 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
-                href="#contact"
+                href="/contact"
                 className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 sm:py-4 bg-foreground text-white font-semibold rounded-sm hover:bg-accent hover:text-foreground transition-all duration-300 active:scale-95"
               >
                 Get Free Consultation
@@ -115,6 +115,7 @@ export default function Hero() {
                   'Accounting & Bookkeeping',
                   'GST & Income Tax Consultancy',
                   'Company Registration',
+                  'Audit & Assurance',
                   'Financial Advisory Services',
                   'Manpower Supply Services',
                 ].map((service) => (
