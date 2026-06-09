@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { ChevronDown, Upload, FileText, X, Lightbulb, Filter, Loader2, Plus, Clock, Send, Download } from 'lucide-react'
+import { ChevronDown, Upload, FileText, X, Lightbulb, Filter, Loader2, Plus, Clock, Send, Download, ShieldAlert } from 'lucide-react'
 import { apiGetServices, apiAddInvoice, apiDeleteInvoice, apiRequestService } from '@/lib/api'
+import { useAuth } from '@/app/auth-context'
 
 interface Invoice { id: number; file_name: string; file_url: string | null; uploaded_at: string }
 interface Service {
@@ -18,6 +19,8 @@ interface Service {
 type FilterType = 'All' | 'Active' | 'Pending' | 'Requested' | 'Inactive'
 
 export default function ServicesPage() {
+  const { user } = useAuth()
+  const isApproved = user?.is_approved ?? false
   const [services, setServices] = useState<Service[]>([])
   const [loadingServices, setLoadingServices] = useState(true)
   const [confirmDelete, setConfirmDelete] = useState<{ serviceId: number; invoiceId: number; name: string } | null>(null)
@@ -115,14 +118,37 @@ export default function ServicesPage() {
           <h1 className="text-4xl font-bold text-foreground">Services</h1>
           <p className="text-foreground-secondary">Manage your services and upload invoices</p>
         </div>
-        <button
-          onClick={() => { setShowRequestForm(true); setRequestError(''); setRequestSuccess(false) }}
-          className="flex items-center gap-2 px-5 py-2.5 bg-accent text-foreground font-semibold rounded-xl hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          Request a Service
-        </button>
+        {isApproved ? (
+          <button
+            onClick={() => { setShowRequestForm(true); setRequestError(''); setRequestSuccess(false) }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-foreground font-semibold rounded-xl hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Request a Service
+          </button>
+        ) : (
+          <span className="flex items-center gap-2 px-5 py-2.5 bg-surface-2 text-foreground-muted font-semibold rounded-xl border border-border cursor-not-allowed text-sm">
+            <Plus className="w-4 h-4" />
+            Request a Service
+          </span>
+        )}
       </div>
+
+      {/* Pending Approval Banner */}
+      {!isApproved && (
+        <div className="flex items-start gap-4 p-5 bg-warning-bg border border-warning/30 rounded-2xl">
+          <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center flex-shrink-0">
+            <ShieldAlert className="w-5 h-5 text-warning" />
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">Account Pending Approval</p>
+            <p className="text-sm text-foreground-secondary mt-1">
+              Your account is under review. Once our team approves it, you'll be able to request services.
+              You'll receive an email notification when approved.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Request Service Modal */}
       {showRequestForm && (

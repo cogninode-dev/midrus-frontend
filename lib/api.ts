@@ -122,7 +122,9 @@ export async function apiVerifyEmail(email: string, otp: string) {
     const msg = data.non_field_errors?.[0] || data.otp?.[0] || 'Verification failed.'
     throw new Error(msg)
   }
-  return data  // { pending: true }
+  // Backend now returns tokens — save them and return user
+  saveTokens(data.tokens.access, data.tokens.refresh)
+  return data.user
 }
 
 export async function apiResendOtp(email: string) {

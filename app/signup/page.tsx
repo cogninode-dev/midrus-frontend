@@ -3,9 +3,9 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/auth-context'
-import { apiVerifyEmail, apiResendOtp } from '@/lib/api'
+import { apiResendOtp } from '@/lib/api'
 import Link from 'next/link'
-import { Eye, EyeOff, Loader2, Check, X, ShieldCheck, Clock, Mail, RefreshCw } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Check, X, ShieldCheck, Mail, RefreshCw } from 'lucide-react'
 import Image from 'next/image'
 
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
@@ -22,7 +22,7 @@ function getPasswordStrength(password: string): { score: number; label: string; 
   return              { score: 4, label: 'Strong', color: 'bg-success' }
 }
 
-type Step = 'form' | 'otp' | 'pending'
+type Step = 'form' | 'otp'
 
 export default function SignupPage() {
   const [step, setStep]       = useState<Step>('form')
@@ -39,7 +39,8 @@ export default function SignupPage() {
   const [resendCooldown, setResendCooldown] = useState(0)
   const otpInputRef = useRef<HTMLInputElement>(null)
 
-  const { signup } = useAuth()
+  const router = useRouter()
+  const { signup, signupVerify } = useAuth()
 
   const emailValid       = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email), [formData.email])
   const passwordStrength = useMemo(() => getPasswordStrength(formData.password), [formData.password])
@@ -72,7 +73,6 @@ export default function SignupPage() {
     try {
       const result = await signup(formData.email, formData.password, formData.name)
       if (result?.otp_required) { setStep('otp'); setResendCooldown(60) }
-      else if (result?.pending) setStep('pending')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed')
     } finally {
@@ -80,15 +80,15 @@ export default function SignupPage() {
     }
   }
 
-  // ─── Step 2: Verify OTP ─────────────────────────────────────────────────────
+  // ─── Step 2: Verify OTP → log in immediately ────────────────────────────────
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     if (otp.length !== 6) { setOtpError('Enter the 6-digit OTP'); return }
     setOtpLoading(true)
     setOtpError('')
     try {
-      await apiVerifyEmail(formData.email, otp)
-      setStep('pending')
+      await signupVerify(formData.email, otp)
+      router.push('/dashboard')
     } catch (err) {
       setOtpError(err instanceof Error ? err.message : 'Verification failed')
     } finally {
@@ -105,34 +105,6 @@ export default function SignupPage() {
     } catch (err) {
       setOtpError(err instanceof Error ? err.message : 'Failed to resend OTP')
     }
-  }
-
-  // ─── Pending screen ─────────────────────────────────────────────────────────
-  if (step === 'pending') {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md text-center space-y-6 animate-fadeInUp">
-          <div className="bg-surface-1 border border-border rounded-2xl p-10 shadow-sm">
-            <div className="w-20 h-20 bg-warning-bg rounded-full flex items-center justify-center mx-auto mb-6">
-              <Clock className="w-10 h-10 text-warning" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-3">Account Submitted!</h1>
-            <p className="text-foreground-secondary mb-2">
-              Your account is <span className="font-semibold text-warning">pending admin approval</span>.
-            </p>
-            <p className="text-sm text-foreground-muted mb-8">
-              Our team will review your account and activate it shortly. You'll receive an email once approved.
-            </p>
-            <Link
-              href="/login"
-              className="inline-block px-8 py-3 bg-accent text-foreground font-semibold rounded-lg hover:bg-accent-hover transition-all duration-200"
-            >
-              Back to Login
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   // ─── OTP verification screen ─────────────────────────────────────────────────
