@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError]         = useState('')
   const [loading, setLoading]     = useState(false)
-  const [forgotSent, setForgotSent] = useState(false)
+
 
   // OTP step
   const [otp, setOtp]                   = useState('')
@@ -188,12 +188,6 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-          {forgotSent && (
-            <div className="mb-6 p-4 bg-accent-muted border border-accent/30 rounded-lg text-foreground text-sm flex items-center gap-2 animate-scaleIn">
-              <Mail className="w-4 h-4 flex-shrink-0 text-link" />
-              Please contact <span className="font-semibold mx-1">admin@midrus.com</span> to reset your password.
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -213,12 +207,10 @@ export default function LoginPage() {
                 <label htmlFor="password" className="block text-sm font-semibold text-foreground">
                   Password
                 </label>
-                <button type="button"
-                  className="text-xs text-link font-semibold hover:text-link-hover hover:underline transition-colors"
-                  onClick={() => setForgotSent(true)}
-                >
+                <Link href="/forgot-password"
+                  className="text-xs text-link font-semibold hover:text-link-hover hover:underline transition-colors">
                   Forgot password?
-                </button>
+                </Link>
               </div>
               <div className="relative">
                 <input

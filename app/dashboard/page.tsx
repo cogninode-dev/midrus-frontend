@@ -135,9 +135,9 @@ export default function DashboardPage() {
               <Upload className="w-7 h-7 text-link" />
             </div>
             <h3 className="font-semibold text-foreground group-hover:text-link transition-colors text-lg">
-              Upload Invoice
+              Upload Document
             </h3>
-            <p className="text-xs text-foreground-muted mt-2">Add invoice documents</p>
+            <p className="text-xs text-foreground-muted mt-2">Add service documents</p>
           </Link>
 
           <Link

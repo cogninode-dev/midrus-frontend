@@ -31,9 +31,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser]       = useState<User | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser]   = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const isLoggedIn = user !== null
 
   // On mount — restore session from stored token
   useEffect(() => {
@@ -41,19 +41,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!token) { setLoading(false); return }
 
     apiGetMe()
-      .then((u) => { setUser(u); setIsLoggedIn(true) })
+      .then(setUser)
       .catch(() => { clearTokens() })
       .finally(() => setLoading(false))
   }, [])
 
   const login = async (email: string, password: string) => {
-    return await apiLogin(email, password)  // { otp_required: true }
+    return await apiLogin(email, password)
   }
 
   const loginVerify = async (email: string, otp: string) => {
     const u = await apiVerifyLoginOtp(email, otp)
     setUser(u)
-    setIsLoggedIn(true)
   }
 
   const signup = async (email: string, password: string, name: string) => {
@@ -63,13 +62,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signupVerify = async (email: string, otp: string) => {
     const u = await apiVerifyEmail(email, otp)
     setUser(u)
-    setIsLoggedIn(true)
   }
 
   const logout = async () => {
     await apiLogout()
     setUser(null)
-    setIsLoggedIn(false)
   }
 
   return (

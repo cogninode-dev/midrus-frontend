@@ -1,11 +1,19 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { ChevronDown, Upload, FileText, X, Lightbulb, Filter, Loader2, Plus, Clock, Send, Download, ShieldAlert } from 'lucide-react'
+import { ChevronDown, Upload, FileText, X, Lightbulb, Filter, Loader2, Plus, Clock, Send, Download, ShieldAlert, CheckCircle2, XCircle } from 'lucide-react'
 import { apiGetServices, apiAddInvoice, apiDeleteInvoice, apiRequestService } from '@/lib/api'
 import { useAuth } from '@/app/auth-context'
 
-interface Invoice { id: number; file_name: string; file_url: string | null; uploaded_at: string }
+interface Invoice {
+  id: number
+  file_name: string
+  file_url: string | null
+  uploaded_at: string
+  is_downloaded: boolean
+  is_reupload: boolean
+  status: 'active' | 'rejected'
+}
 interface Service {
   id: number
   name: string
@@ -60,6 +68,7 @@ export default function ServicesPage() {
   }
 
   const [uploadingServiceId, setUploadingServiceId] = useState<number | null>(null)
+  const [replacingDocId, setReplacingDocId] = useState<number | null>(null)
   const [expandedServiceId, setExpandedServiceId] = useState<number | null>(null)
   const [activeFilter, setActiveFilter] = useState<FilterType>('All')
 
@@ -110,13 +119,29 @@ export default function ServicesPage() {
     } catch {}
   }
 
+  const handleReplace = async (serviceId: number, invoiceId: number, files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setReplacingDocId(invoiceId)
+    try {
+      await apiDeleteInvoice(serviceId, invoiceId)
+      const newDoc = await apiAddInvoice(serviceId, files[0], true)
+      setServices((prev) =>
+        prev.map((s) => s.id === serviceId
+          ? { ...s, invoices: [...s.invoices.filter((inv) => inv.id !== invoiceId), newDoc] }
+          : s
+        )
+      )
+    } catch {}
+    setReplacingDocId(null)
+  }
+
   return (
     <div className="space-y-8 animate-fadeInUp">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-foreground">Services</h1>
-          <p className="text-foreground-secondary">Manage your services and upload invoices</p>
+          <p className="text-foreground-secondary">Manage your services and upload documents</p>
         </div>
         {isApproved ? (
           <button
@@ -303,7 +328,7 @@ export default function ServicesPage() {
                     {service.invoices.length === 0 && expandedServiceId !== service.id && (
                       <span className="text-xs text-link font-semibold flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload className="w-3 h-3" />
-                        Upload first invoice
+                        Upload first document
                       </span>
                     )}
                   </div>
@@ -328,7 +353,7 @@ export default function ServicesPage() {
                       <div className="space-y-3">
                         <h4 className="font-semibold text-foreground flex items-center gap-2">
                           <FileText className="w-4 h-4 text-link" />
-                          Invoice Documents
+                          Documents
                         </h4>
                         {uploadingServiceId === service.id ? (
                           <div className="relative bg-accent-muted border-2 border-dashed border-accent/40 rounded-2xl p-12 text-center hover:border-accent/60 hover:bg-accent-subtle transition-all duration-200 group cursor-pointer">
@@ -343,7 +368,7 @@ export default function ServicesPage() {
                             <div className="pointer-events-none">
                               <Upload className="w-14 h-14 text-link mx-auto mb-3 group-hover:scale-110 transition-transform" />
                               <p className="text-sm font-semibold text-foreground mb-1">Drop PDFs here or click to browse</p>
-                              <p className="text-xs text-foreground-secondary">Upload multiple PDF invoices at once</p>
+                              <p className="text-xs text-foreground-secondary">Upload multiple documents at once</p>
                               <p className="text-xs text-foreground-muted mt-2">Supports: PDF, DOC, DOCX, JPG, PNG</p>
                             </div>
                           </div>
@@ -353,7 +378,7 @@ export default function ServicesPage() {
                             className="w-full bg-surface-1 border-2 border-dashed border-border-strong rounded-2xl p-8 text-center hover:border-accent/40 hover:bg-accent-muted transition-all duration-200 group/upload focus:outline-none focus:ring-2 focus:ring-accent/40 active:scale-[0.98]"
                           >
                             <Upload className="w-10 h-10 text-foreground-muted mx-auto mb-3 group-hover/upload:text-link transition-all" />
-                            <p className="text-sm font-semibold text-foreground group-hover/upload:text-link transition-colors">Upload Invoice PDFs</p>
+                            <p className="text-sm font-semibold text-foreground group-hover/upload:text-link transition-colors">Upload Documents</p>
                             <p className="text-xs text-foreground-muted mt-2">Click to select multiple files or drag and drop</p>
                           </button>
                         )}
@@ -363,47 +388,98 @@ export default function ServicesPage() {
                         <div className="space-y-2">
                           <h4 className="font-semibold text-foreground text-sm">Uploaded Files ({service.invoices.length})</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {service.invoices.map((invoice) => (
-                              <div key={invoice.id} className="flex flex-col gap-3 p-4 bg-surface-1 border border-border rounded-xl hover:border-border-strong hover:shadow-sm transition-all duration-200">
-                                {/* File name row */}
+                            {service.invoices.map((invoice) => {
+                              const isRejected   = invoice.status === 'rejected'
+                              const isDownloaded = invoice.is_downloaded
+                              return (
+                              <div
+                                key={invoice.id}
+                                className={`flex flex-col gap-3 p-4 border rounded-xl transition-all duration-200 ${
+                                  isRejected
+                                    ? 'bg-red-50/60 border-red-200 dark:bg-red-950/20 dark:border-red-800'
+                                    : isDownloaded
+                                    ? 'bg-emerald-50/60 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800 hover:border-emerald-300 hover:shadow-sm'
+                                    : 'bg-surface-1 border-border hover:border-border-strong hover:shadow-sm'
+                                }`}
+                              >
+                                {/* File name + status row */}
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <FileText className="w-5 h-5 text-link flex-shrink-0" />
+                                  <FileText className={`w-5 h-5 flex-shrink-0 ${isRejected ? 'text-red-400' : isDownloaded ? 'text-emerald-500' : 'text-link'}`} />
                                   <span className="text-sm font-medium text-foreground truncate flex-1">{invoice.file_name}</span>
-                                  <button
-                                    onClick={() => setConfirmDelete({ serviceId: service.id, invoiceId: invoice.id, name: invoice.file_name })}
-                                    className="p-1 text-foreground-muted hover:text-error rounded transition-colors flex-shrink-0"
-                                    aria-label={`Remove ${invoice.file_name}`}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
+                                  {isRejected ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 flex-shrink-0">
+                                      <XCircle className="w-3 h-3" /> Rejected
+                                    </span>
+                                  ) : isDownloaded ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 flex-shrink-0">
+                                      <CheckCircle2 className="w-3 h-3" /> Downloaded
+                                    </span>
+                                  ) : null}
+                                  {!isRejected && (
+                                    <button
+                                      onClick={() => setConfirmDelete({ serviceId: service.id, invoiceId: invoice.id, name: invoice.file_name })}
+                                      className="p-1 text-foreground-muted hover:text-error rounded transition-colors flex-shrink-0"
+                                      aria-label={`Remove ${invoice.file_name}`}
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  )}
                                 </div>
 
+                                {/* Rejected notice */}
+                                {isRejected && (
+                                  <p className="text-xs text-red-600 dark:text-red-400">
+                                    This document was reviewed and rejected by MIDRUS. Please upload a corrected version.
+                                  </p>
+                                )}
+
                                 {/* Action buttons row */}
-                                {invoice.file_url ? (
-                                  <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2">
+                                  {invoice.file_url && (
                                     <a
                                       href={invoice.file_url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-foreground bg-surface-2 border border-border rounded-lg hover:bg-surface-3 hover:border-border-strong transition-all duration-200"
+                                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-link bg-accent-muted border border-accent/40 rounded-lg hover:bg-accent-subtle hover:border-accent/60 transition-all duration-200"
                                     >
                                       <FileText className="w-3.5 h-3.5" />
                                       View
                                     </a>
-                                    <a
-                                      href={invoice.file_url}
-                                      download={invoice.file_name}
-                                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-foreground bg-accent border border-accent/40 rounded-lg hover:bg-accent-hover transition-all duration-200"
-                                    >
-                                      <Download className="w-3.5 h-3.5" />
-                                      Download
-                                    </a>
-                                  </div>
-                                ) : (
-                                  <p className="text-xs text-foreground-muted italic">No file attached</p>
-                                )}
+                                  )}
+                                  {isRejected ? (
+                                    <label className="flex-1 relative flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-red-500 border border-red-500 rounded-lg hover:bg-red-600 transition-all duration-200 cursor-pointer">
+                                      <input
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                        disabled={replacingDocId === invoice.id}
+                                        onChange={(e) => handleReplace(service.id, invoice.id, e.target.files)}
+                                      />
+                                      {replacingDocId === invoice.id ? (
+                                        <><Loader2 className="w-3.5 h-3.5 animate-spin" />Replacing…</>
+                                      ) : (
+                                        <><Upload className="w-3.5 h-3.5" />Replace</>
+                                      )}
+                                    </label>
+                                  ) : (
+                                    invoice.file_url && (
+                                      <a
+                                        href={invoice.file_url}
+                                        download={invoice.file_name}
+                                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-foreground bg-accent border border-accent/40 rounded-lg hover:bg-accent-hover transition-all duration-200"
+                                      >
+                                        <Download className="w-3.5 h-3.5" />
+                                        Download
+                                      </a>
+                                    )
+                                  )}
+                                  {!invoice.file_url && !isRejected && (
+                                    <p className="text-xs text-foreground-muted italic">No file attached</p>
+                                  )}
+                                </div>
                               </div>
-                            ))}
+                              )
+                            })}
                           </div>
                         </div>
                       )}
@@ -427,7 +503,7 @@ export default function ServicesPage() {
                 <X className="w-5 h-5 text-foreground-muted" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-foreground">Remove Invoice?</h3>
+                <h3 className="text-base font-bold text-foreground">Remove Document?</h3>
                 <p className="text-sm text-foreground-muted mt-1">
                   Are you sure you want to remove <span className="font-semibold text-foreground break-all">"{confirmDelete.name}"</span>? This cannot be undone.
                 </p>
@@ -458,7 +534,7 @@ export default function ServicesPage() {
       <div className="bg-accent-muted border border-accent-subtle rounded-2xl p-6 hover:bg-accent-subtle transition-all duration-200 flex items-start gap-3">
         <Lightbulb className="w-5 h-5 text-link flex-shrink-0 mt-0.5" />
         <p className="text-sm text-foreground">
-          <span className="font-semibold">Tip:</span> Upload invoices and documents to keep everything organized. Your admin panel will review and manage these from the backend.
+          <span className="font-semibold">Tip:</span> Upload documents to keep everything organized. Your admin panel will review and manage these from the backend.
         </p>
       </div>
     </div>

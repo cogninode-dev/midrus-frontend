@@ -11,6 +11,7 @@ const breadcrumbMap: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/services': 'Services',
   '/dashboard/profile': 'Profile',
+  '/dashboard/payment': 'Payment',
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

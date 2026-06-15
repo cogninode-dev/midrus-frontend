@@ -409,7 +409,7 @@ export default function ProfilePage() {
                   <UploadIcon className="w-4 h-4 text-link" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-foreground text-sm">Invoice uploaded</span>
+                  <span className="text-foreground text-sm">Document uploaded</span>
                   <p className="text-xs text-foreground-muted">Recently</p>
                 </div>
               </div>

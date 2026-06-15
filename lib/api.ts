@@ -29,7 +29,7 @@ async function refreshAccessToken(): Promise<string | null> {
     })
     if (!res.ok) { clearTokens(); return null }
     const data = await res.json()
-    localStorage.setItem('access_token', data.access)
+    saveTokens(data.access, data.refresh ?? getRefreshToken()!)
     return data.access
   } catch {
     return null
@@ -166,6 +166,31 @@ export async function apiUpdateProfile(data: Record<string, string>) {
   return json.user
 }
 
+export async function apiPasswordResetRequest(email: string) {
+  const res = await fetch(`${BASE_URL}/password-reset/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.email?.[0] || data.error || 'Failed to send OTP.')
+  return data
+}
+
+export async function apiPasswordResetConfirm(email: string, otp: string, new_password: string) {
+  const res = await fetch(`${BASE_URL}/password-reset/confirm/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp, new_password }),
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    const msg = data.otp?.[0] || data.email?.[0] || data.new_password?.[0] || data.non_field_errors?.[0] || 'Reset failed.'
+    throw new Error(msg)
+  }
+  return data
+}
+
 export async function apiChangePassword(current_password: string, new_password: string) {
   const res = await request('/password/change/', {
     method: 'POST',
@@ -202,11 +227,12 @@ export async function apiRequestService(name: string, description: string) {
   return json
 }
 
-export async function apiAddInvoice(serviceId: number, file: File) {
+export async function apiAddInvoice(serviceId: number, file: File, isReupload = false) {
   const token = getAccessToken()
   const formData = new FormData()
   formData.append('file', file)
   formData.append('file_name', file.name)
+  if (isReupload) formData.append('is_reupload', 'true')
   // Do NOT set Content-Type — browser sets multipart boundary automatically
   const res = await fetch(`${BASE_URL}/services/${serviceId}/invoices/`, {
     method: 'POST',
@@ -220,6 +246,16 @@ export async function apiAddInvoice(serviceId: number, file: File) {
 export async function apiDeleteInvoice(serviceId: number, invoiceId: number) {
   await request(`/services/${serviceId}/invoices/${invoiceId}/`, { method: 'DELETE' })
 }
+
+// ─── Invoices ────────────────────────────────────────────────────────────────
+
+export async function apiGetInvoices() {
+  const res = await request('/proforma-invoices/')
+  if (!res.ok) throw new Error('Failed to load invoices.')
+  return res.json()
+}
+
+// ─── Contact ─────────────────────────────────────────────────────────────────
 
 export async function apiContact(name: string, email: string, message: string, phone?: string, company?: string) {
   const res = await fetch(`${BASE_URL}/contact/`, {
