@@ -9,6 +9,22 @@ import { apiPasswordResetRequest, apiPasswordResetConfirm, apiPasswordResetReque
 
 type Step = 'email' | 'otp' | 'password' | 'done'
 
+function Wrap({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md animate-fadeInUp">
+        <div className="mb-8 text-center">
+          <Image src="/logo.png" alt="MIDRUS" width={56} height={56} className="object-contain mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-foreground mb-2">MIDRUS</h1>
+        </div>
+        <div className="bg-surface-1 border border-border rounded-2xl p-8 shadow-sm">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ForgotPasswordPage() {
   const [step, setStep]       = useState<Step>('email')
   const [email, setEmail]     = useState('')
@@ -72,7 +88,7 @@ export default function ForgotPasswordPage() {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) { setError('Passwords do not match.'); return }
-    if (newPassword.length < 6) { setError('Password must be at least 6 characters.'); return }
+    if (newPassword.length < 8) { setError('Password must be at least 8 characters.'); return }
     setError('')
     setLoading(true)
     try {
@@ -85,22 +101,7 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // ─── Shared layout wrapper ─────────────────────────────────────────────────
-  const Wrap = ({ children }: { children: React.ReactNode }) => (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md animate-fadeInUp">
-        <div className="mb-8 text-center">
-          <Image src="/logo.png" alt="MIDRUS" width={56} height={56} className="object-contain mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-foreground mb-2">MIDRUS</h1>
-        </div>
-        <div className="bg-surface-1 border border-border rounded-2xl p-8 shadow-sm">
-          {children}
-        </div>
-      </div>
-    </div>
-  )
-
-  const ErrorBanner = () => error ? (
+  const errorBanner = error ? (
     <div className="mb-5 p-3 bg-error-bg border border-error/20 rounded-lg text-error text-sm flex items-center gap-2 animate-scaleIn">
       <X className="w-4 h-4 flex-shrink-0" />
       {error}
@@ -139,7 +140,7 @@ export default function ForgotPasswordPage() {
         <p className="text-foreground-secondary text-sm">Choose a strong password for your account.</p>
       </div>
 
-      <ErrorBanner />
+      {errorBanner}
 
       <form onSubmit={handleResetPassword} className="space-y-4">
         <div>
@@ -150,7 +151,7 @@ export default function ForgotPasswordPage() {
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               className="w-full px-4 py-3 pr-12 bg-surface-1 border border-border rounded-lg text-foreground placeholder-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
-              placeholder="Min. 6 characters"
+              placeholder="Min. 8 characters"
               required
             />
             <button type="button" onClick={() => setShowPassword(v => !v)}
@@ -197,7 +198,7 @@ export default function ForgotPasswordPage() {
         </p>
       </div>
 
-      <ErrorBanner />
+      {errorBanner}
 
       <form onSubmit={handleVerifyOtp} className="space-y-4">
         <div>
@@ -258,7 +259,7 @@ export default function ForgotPasswordPage() {
         </p>
       </div>
 
-      <ErrorBanner />
+      {errorBanner}
 
       <form onSubmit={handleSendOtp} className="space-y-4">
         <div>
