@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, Building2, Briefcase, Users, User, Globe, FileCheck, CheckCircle2, Clock } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Company Registration Services | MIDRUS',
+  description: 'End-to-end company incorporation, MCA filings, and GST registration — get your business up and running quickly, with zero hassle.',
+}
 
 const registrationTypes = [
   {

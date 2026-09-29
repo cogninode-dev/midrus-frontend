@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Navigation from '@/components/navigation'
 import Footer from '@/components/footer'
 import { ChevronRight, User } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Our Team | MIDRUS',
+  description: 'Meet the qualified Chartered Accountants, finance professionals, and operations specialists behind MIDRUS.',
+}
 
 const team = [
   {

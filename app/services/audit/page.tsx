@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, FileSearch, ClipboardCheck, ShieldCheck, AlertCircle, Users, Layers, CheckCircle2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Audit & Assurance Services | MIDRUS',
+  description: 'Independent, thorough audits from ICAI-registered Chartered Accountants — ensuring accuracy, regulatory compliance, and stakeholder confidence.',
+}
 
 const auditTypes = [
   {

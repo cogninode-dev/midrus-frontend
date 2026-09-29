@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, ChevronRight, Monitor, Shield, TrendingUp, Zap, BarChart3, Lock } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Accounting & Bookkeeping Services | MIDRUS',
+  description: 'Virtual bookkeeping across Tally, Zoho Books and more — accurate, precise, and timely financial statements from an experienced accounting team.',
+}
 
 const softwares = [
   {

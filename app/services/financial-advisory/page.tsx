@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, TrendingUp, PieChart, DollarSign, BarChart2, Target, Lightbulb, CheckCircle2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Financial Advisory Services | MIDRUS',
+  description: 'Strategic financial planning, investment guidance, cash flow management, and business forecasting to help you make informed, confident decisions.',
+}
 
 const advisoryServices = [
   {

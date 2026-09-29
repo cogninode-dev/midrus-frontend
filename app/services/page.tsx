@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, ArrowRight } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Our Services | MIDRUS',
+  description: 'From day-to-day bookkeeping to corporate strategy — MIDRUS delivers expert accounting, tax, registration, audit, and advisory services under one roof.',
+}
 
 const services = [
   {

@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, Receipt, FileText, Calculator, TrendingDown, Calendar, CheckCircle2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'GST & Income Tax Consultancy | MIDRUS',
+  description: 'Expert GST filing, income tax returns, and tax planning for individuals and businesses — full compliance while maximising deductions.',
+}
 
 const services = [
   {

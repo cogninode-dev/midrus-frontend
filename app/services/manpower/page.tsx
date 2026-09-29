@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, UserCheck, Briefcase, ClipboardList, Star, Clock, Shield } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Manpower Supply Services | MIDRUS',
+  description: 'Reliable staffing solutions for accounting, administration, and operations roles — skilled, verified professionals for businesses of all sizes.',
+}
 
 const roles = [
   { icon: '📊', title: 'Accounting & Finance', roles: ['Accountants', 'Bookkeepers', 'Financial Analysts', 'Payroll Executives', 'Audit Assistants'] },

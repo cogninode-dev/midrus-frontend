@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Navigation from '@/components/navigation'
 import Footer from '@/components/footer'
 import { ChevronRight } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Our Process | MIDRUS',
+  description: 'A clear, structured process — so you always know what’s happening, what comes next, and what we need from you.',
+}
 
 const steps = [
   {

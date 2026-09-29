@@ -6,12 +6,33 @@ import './globals.css'
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 
+// TODO: update once a custom domain (e.g. midrusindia.com) is pointed at
+// this deployment — see NEXT_PUBLIC_SITE_URL.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://midrus.vercel.app'
+
 export const metadata: Metadata = {
-  title: 'MIDRUS | Accounting, Tax & Company Registration',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'MIDRUS | Accounting, Tax & Company Registration',
+    template: '%s',
+  },
   description: 'MIDRUS provides professional accounting, GST & income tax consultancy, and company registration services across India.',
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'MIDRUS',
+    title: 'MIDRUS | Accounting, Tax & Company Registration',
+    description: 'Professional accounting, GST & income tax consultancy, and company registration services across India.',
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'MIDRUS | Accounting, Tax & Company Registration',
+    description: 'Professional accounting, GST & income tax consultancy, and company registration services across India.',
+    images: ['/logo.png'],
   },
 }
 
