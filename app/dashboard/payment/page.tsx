@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Copy, Check, Download, Smartphone, CreditCard, ExternalLink, Loader2, FileText, Eye, Receipt } from 'lucide-react'
 import { useAuth } from '@/app/auth-context'
 import { apiGetInvoices } from '@/lib/api'
-import { InvoiceData, InvoiceItem } from '@/lib/invoice-store'
+import { InvoiceData, InvoiceItem, PaymentStatus } from '@/lib/invoice-store'
 import dynamic from 'next/dynamic'
 
 const InvoiceViewer = dynamic(() => import('@/components/invoice'), { ssr: false })
@@ -46,7 +46,16 @@ function toInvoiceData(raw: Record<string, unknown>): InvoiceData {
     uploadedPdfUrl:  raw.uploaded_pdf_url ? String(raw.uploaded_pdf_url) : null,
     notes:           String(raw.notes ?? ''),
     date:            String(raw.created_at),
+    paymentStatus:      (raw.payment_status as PaymentStatus) ?? 'pending',
+    paymentStatusLabel: String(raw.payment_status_label ?? 'Pending'),
   }
+}
+
+const paymentStatusStyles: Record<PaymentStatus, string> = {
+  success:    'bg-success-bg text-success',
+  processing: 'bg-warning-bg text-warning',
+  failed:     'bg-error-bg text-error',
+  pending:    'bg-surface-3 text-foreground-secondary',
 }
 
 export default function PaymentPage() {
@@ -146,9 +155,14 @@ export default function PaymentPage() {
                     <FileText className="w-5 h-5 text-foreground-secondary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {inv.items.length > 0 ? inv.items.map((i) => i.serviceName).join(', ') : inv.invoiceNumber}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {inv.items.length > 0 ? inv.items.map((i) => i.serviceName).join(', ') : inv.invoiceNumber}
+                      </p>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${paymentStatusStyles[inv.paymentStatus]}`}>
+                        {inv.paymentStatusLabel}
+                      </span>
+                    </div>
                     <p className="text-xs text-foreground-muted">
                       {inv.items.length > 0
                         ? `${inv.items[0].monthName} ${inv.items[0].year}${inv.items.length > 1 ? ` +${inv.items.length - 1} more` : ''}`

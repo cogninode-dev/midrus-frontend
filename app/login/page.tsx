@@ -141,7 +141,7 @@ export default function LoginPage() {
 
             <div className="mt-5 text-center space-y-3">
               <div>
-                <p className="text-sm text-foreground-muted mb-2">Didn't receive the email?</p>
+                <p className="text-sm text-foreground-muted mb-2">Didn&apos;t receive the email?</p>
                 <button
                   onClick={handleResendOtp}
                   disabled={resendCooldown > 0}

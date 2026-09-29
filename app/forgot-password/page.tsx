@@ -226,7 +226,7 @@ export default function ForgotPasswordPage() {
 
       <div className="mt-5 text-center space-y-3">
         <div>
-          <p className="text-sm text-foreground-muted mb-2">Didn't receive the email?</p>
+          <p className="text-sm text-foreground-muted mb-2">Didn&apos;t receive the email?</p>
           <button
             onClick={handleResend}
             disabled={resendCooldown > 0}
@@ -255,7 +255,7 @@ export default function ForgotPasswordPage() {
         </div>
         <h2 className="text-2xl font-bold text-foreground mb-1">Forgot Password?</h2>
         <p className="text-foreground-secondary text-sm">
-          Enter your registered email and we'll send you a reset OTP.
+          Enter your registered email and we&apos;ll send you a reset OTP.
         </p>
       </div>
 

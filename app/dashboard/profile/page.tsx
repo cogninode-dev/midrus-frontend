@@ -2,12 +2,18 @@
 
 import { useAuth } from '@/app/auth-context'
 import { useState, useEffect } from 'react'
-import { Camera, Save, X, Lock, Eye, EyeOff, FileEdit, CheckCircle, CreditCard, Calendar, Loader2, Pencil, Upload as UploadIcon, FileText, ShieldCheck } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Camera, Save, X, Lock, Eye, EyeOff, FileEdit, CheckCircle, Calendar, Loader2, Pencil, FileText, ShieldCheck, AlertTriangle, Trash2 } from 'lucide-react'
 import { apiUpdateProfile, apiChangePassword } from '@/lib/api'
 
 export default function ProfilePage() {
-  const { user, setUser } = useAuth()
+  const { user, setUser, deleteAccount } = useAuth()
+  const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deletingAccount, setDeletingAccount] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
   const [profileError, setProfileError] = useState('')
   const [showChangePassword, setShowChangePassword] = useState(false)
@@ -28,9 +34,14 @@ export default function ProfilePage() {
     gst_number: user?.gst_number || '',
   })
 
-  // Sync form when user loads from API after mount
+  // Sync form when user loads from API after mount. This is the standard
+  // "derive local editable state from an async-loaded prop" pattern; an
+  // effect is the right tool here (the alternative — comparing against a
+  // tracked "previous user" during render — is more complex for no real
+  // benefit in a page that already re-renders cheaply on user load).
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name || '',
         email: user.email || '',
@@ -89,6 +100,19 @@ export default function ProfilePage() {
     } catch (err: unknown) {
       setPasswordError(err instanceof Error ? err.message : 'Failed to change password.')
       setSavingPassword(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) { setDeleteError('Enter your password to confirm.'); return }
+    setDeletingAccount(true)
+    setDeleteError('')
+    try {
+      await deleteAccount(deletePassword)
+      router.push('/')
+    } catch (err: unknown) {
+      setDeleteError(err instanceof Error ? err.message : 'Could not delete your account. Please try again.')
+      setDeletingAccount(false)
     }
   }
 
@@ -353,6 +377,24 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
+          {/* Danger Zone */}
+          <div className="bg-surface-1 border border-error/20 rounded-2xl p-8">
+            <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-error" />
+              Danger Zone
+            </h3>
+            <p className="text-sm text-foreground-muted mb-4">
+              Permanently delete your account and personal data. This cannot be undone.
+            </p>
+            <button
+              onClick={() => { setShowDeleteModal(true); setDeleteError(''); setDeletePassword('') }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-error/10 text-error font-semibold rounded-lg border border-error/30 hover:bg-error/20 transition-all duration-200 text-sm"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Account
+            </button>
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -364,20 +406,14 @@ export default function ProfilePage() {
             </h3>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-success-bg/50 border border-success/10 rounded-lg">
+              <div className={`flex items-center justify-between p-3 rounded-lg border ${user?.is_approved ? 'bg-success-bg/50 border-success/10' : 'bg-warning-bg/50 border-warning/10'}`}>
                 <span className="text-sm text-foreground flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-success" />
-                  Verification
+                  <CheckCircle className={`w-4 h-4 ${user?.is_approved ? 'text-success' : 'text-warning'}`} />
+                  Approval
                 </span>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-success-bg text-success">Verified</span>
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-info-bg/50 border border-info/10 rounded-lg">
-                <span className="text-sm text-foreground flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-info" />
-                  Subscription
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${user?.is_approved ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
+                  {user?.is_approved ? 'Approved' : 'Pending'}
                 </span>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-info-bg text-info">Active</span>
               </div>
 
               <div className="flex items-center justify-between p-3 bg-surface-2 border border-border rounded-lg">
@@ -385,48 +421,72 @@ export default function ProfilePage() {
                   <Calendar className="w-4 h-4 text-foreground-muted" />
                   Member Since
                 </span>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-3 text-foreground-secondary">2024</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-surface-1 border border-border rounded-2xl p-8 hover:border-border-strong transition-all duration-200 hover:shadow-sm">
-            <h3 className="text-lg font-bold text-foreground mb-4">Recent Activity</h3>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-3 pb-3 border-b border-border">
-                <div className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
-                  <Pencil className="w-4 h-4 text-link" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-foreground text-sm">Profile updated</span>
-                  <p className="text-xs text-foreground-muted">Recently</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 pb-3 border-b border-border">
-                <div className="w-8 h-8 rounded-full bg-accent-muted flex items-center justify-center flex-shrink-0">
-                  <UploadIcon className="w-4 h-4 text-link" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-foreground text-sm">Document uploaded</span>
-                  <p className="text-xs text-foreground-muted">Recently</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-success-bg flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="w-4 h-4 text-success" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-foreground text-sm">Service completed</span>
-                  <p className="text-xs text-foreground-muted">Recently</p>
-                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-3 text-foreground-secondary">
+                  {user?.created_at
+                    ? new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '—'}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-foreground/20 backdrop-blur-sm animate-fadeInUp">
+          <div className="bg-surface-1 border border-border rounded-2xl shadow-xl w-full max-w-md p-8 space-y-5 animate-scaleIn">
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 bg-error-bg border border-error/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-error" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Delete your account?</h3>
+                <ul className="mt-2 space-y-1.5 text-sm text-foreground-muted">
+                  <li>• Your profile, sign-in details and uploaded documents are erased. This cannot be undone.</li>
+                  <li>• Invoices and tax records already issued are kept for the period the law requires, no longer linked to a login.</li>
+                  <li>• Amounts owed for services already provided remain payable.</li>
+                </ul>
+              </div>
+            </div>
+
+            {deleteError && (
+              <div className="p-3 bg-error-bg border border-error/20 rounded-lg text-error text-sm">{deleteError}</div>
+            )}
+
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Confirm with your password</label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                disabled={deletingAccount}
+                onKeyDown={(e) => e.key === 'Enter' && !deletingAccount && handleDeleteAccount()}
+                className="w-full px-4 py-3 border border-border-strong rounded-lg bg-surface-1 text-foreground focus:outline-none focus:ring-2 focus:ring-error/40 focus:border-error transition-all"
+                placeholder="••••••••"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deletingAccount}
+                className="flex-1 py-2.5 bg-surface-2 text-foreground font-semibold rounded-lg border border-border hover:bg-surface-3 transition-all duration-200 text-sm disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount}
+                className="flex-1 py-2.5 bg-error text-white font-semibold rounded-lg hover:bg-error/90 active:scale-95 transition-all duration-200 text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingAccount ? <><Loader2 className="w-4 h-4 animate-spin" />Deleting…</> : 'Delete my account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

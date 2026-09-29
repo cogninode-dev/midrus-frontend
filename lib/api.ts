@@ -97,11 +97,11 @@ export async function apiResendLoginOtp(email: string) {
   return data
 }
 
-export async function apiRegister(email: string, password: string, name: string) {
+export async function apiRegister(email: string, password: string, name: string, acceptedTerms: boolean) {
   const res = await fetch(`${BASE_URL}/register/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, name }),
+    body: JSON.stringify({ email, password, name, accepted_terms: acceptedTerms }),
   })
   const data = await res.json()
   if (!res.ok) {
@@ -201,6 +201,16 @@ export async function apiChangePassword(current_password: string, new_password: 
   return json
 }
 
+export async function apiDeleteAccount(password: string) {
+  const res = await request('/account/delete/', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error || 'Could not delete your account.')
+  return json
+}
+
 // ─── Dashboard ───────────────────────────────────────────────────────────────
 
 export async function apiDashboardStats() {
@@ -266,6 +276,32 @@ export async function apiContact(name: string, email: string, message: string, p
   const data = await res.json()
   if (!res.ok) throw new Error(data.detail || 'Failed to send message.')
   return data
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+export async function apiGetNotifications(offset = 0) {
+  const res = await request(`/notifications/?offset=${offset}`)
+  if (!res.ok) throw new Error('Failed to load notifications.')
+  return res.json()
+}
+
+export async function apiUnreadCount() {
+  const res = await request('/notifications/unread-count/')
+  if (!res.ok) throw new Error('Failed to load unread count.')
+  return res.json()
+}
+
+export async function apiMarkNotificationRead(id: number) {
+  const res = await request(`/notifications/${id}/read/`, { method: 'POST' })
+  if (!res.ok) throw new Error('Failed to mark as read.')
+  return res.json()
+}
+
+export async function apiMarkAllNotificationsRead() {
+  const res = await request('/notifications/read-all/', { method: 'POST' })
+  if (!res.ok) throw new Error('Failed to mark all as read.')
+  return res.json()
 }
 
 export { clearTokens, getAccessToken }

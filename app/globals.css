@@ -199,6 +199,23 @@
   to { opacity: 1; max-height: 600px; }
 }
 
+/* ─── Splash Screen Logo Animation ─── */
+@keyframes splashLogoTransition {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(0.97);
+  }
+  100% {
+    transform: translate(calc(-50vw + 60px), calc(-50vh + 48px)) scale(0.5);
+  }
+}
+@keyframes splashOverlayFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 /* ─── Base ─── */
 @layer base {
   * {
@@ -229,4 +246,10 @@
   .animate-dropdownSlide { animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
   .animate-scaleIn { animation: scaleIn 0.2s ease-out; }
   .animate-expandDown { animation: expandDown 0.3s ease-out; overflow: hidden; }
+  .animate-splashLogo {
+    animation: splashLogoTransition 1100ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .animate-splashFadeOut {
+    animation: splashOverlayFadeOut 300ms ease-out forwards;
+  }
 }

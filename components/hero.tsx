@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import PhoneMockup from '@/components/phone-mockup'
 
 const stats = [
   { value: '500+', label: 'Businesses Served' },
@@ -15,33 +16,38 @@ const badges = [
   { icon: '✅', text: 'Certified Accountants' },
 ]
 
+/** A phrase highlighted the way a rounded highlighter pen would mark it — each
+ * wrapped line gets its own snug rounded background (box-decoration-break),
+ * instead of one block stretching the full line width. */
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="bg-accent-subtle rounded-2xl px-2 sm:px-3 py-0.5 sm:py-1 box-decoration-clone"
+    >
+      {children}
+    </span>
+  )
+}
+
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white py-14 md:py-20 lg:py-24">
+    <section className="relative overflow-hidden bg-white py-10 md:py-20 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
 
           {/* Left Content */}
           <div className="space-y-6 lg:space-y-8 animate-fadeInUp">
 
-            {/* Trust pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-accent/20 border border-accent/40 rounded-full text-xs sm:text-sm font-semibold text-foreground max-w-full">
-              <span className="w-2 h-2 shrink-0 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="truncate">Trusted by 500+ businesses across India</span>
-            </div>
-
             {/* Headline */}
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight">
-                Focus on growing your business. We'll handle your{' '}
-                <span className="text-accent">taxes, compliance,</span>{' '}
-                and{' '}
-                <span className="text-accent">regulatory filings.</span>
+              <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-[1.3]">
+                We handle your <Chip>taxes, compliance,</Chip> and{' '}
+                <Chip>regulatory filings.</Chip>
               </h1>
               <p className="text-sm sm:text-base md:text-lg text-grey max-w-xl leading-relaxed">
-                MIDRUS provides expert <strong>Accounting</strong>, <strong>GST & Tax Consultancy</strong>,{' '}
-                <strong>Company Registration</strong>, and <strong>Financial Advisory</strong> services — so
-                you can focus on growing your business.
+                Expert <strong>Accounting</strong>, <strong>GST &amp; Tax Consultancy</strong>,{' '}
+                <strong>Company Registration</strong>, and <strong>Financial Advisory</strong> 
+                so you can focus on growing your business.
               </p>
             </div>
 
@@ -85,55 +91,27 @@ export default function Hero() {
             </p>
           </div>
 
-          {/* Right Side — Stats & Service Card */}
-          <div className="space-y-4 animate-slideInLeft">
-
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="p-4 sm:p-6 bg-grey-light rounded-lg border border-border hover:border-accent hover:shadow-lg transition-all duration-300 text-center group"
-                >
-                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground group-hover:text-accent transition-colors duration-300 leading-none">
-                    {stat.value}
-                  </p>
-                  <p className="text-xs sm:text-sm text-grey mt-1.5 font-medium leading-snug">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Service highlight card */}
-            <div className="p-5 sm:p-6 bg-foreground text-white rounded-lg">
-              <p className="text-xs sm:text-sm font-semibold text-accent mb-3 uppercase tracking-wide">
-                What we do
-              </p>
-              <ul className="space-y-2 text-sm text-grey-light">
-                {[
-                  'Accounting & Bookkeeping',
-                  'GST & Income Tax Consultancy',
-                  'Company Registration',
-                  'Audit & Assurance',
-                  'Financial Advisory Services',
-                  'Manpower Supply Services',
-                ].map((service) => (
-                  <li key={service} className="flex items-center gap-2">
-                    <span className="text-accent shrink-0">→</span>
-                    {service}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="#services"
-                className="inline-block mt-4 text-sm font-semibold text-accent hover:underline"
-              >
-                Explore all services →
-              </Link>
-            </div>
-
+          {/* Right Side — the real app, shown in a phone frame */}
+          <div className="hidden md:block animate-slideInLeft" aria-hidden="true">
+            <PhoneMockup />
           </div>
+        </div>
+
+        {/* Stats strip */}
+        <div className="mt-14 lg:mt-20 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="p-4 sm:p-6 bg-grey-light rounded-lg border border-border hover:border-accent hover:shadow-lg transition-all duration-300 text-center group"
+            >
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground group-hover:text-accent transition-colors duration-300 leading-none">
+                {stat.value}
+              </p>
+              <p className="text-xs sm:text-sm text-grey mt-1.5 font-medium leading-snug">
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

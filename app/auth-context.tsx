@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { apiLogin, apiVerifyLoginOtp, apiRegister, apiVerifyEmail, apiLogout, apiGetMe, clearTokens, getAccessToken } from '@/lib/api'
+import { apiLogin, apiVerifyLoginOtp, apiRegister, apiVerifyEmail, apiLogout, apiGetMe, apiDeleteAccount, clearTokens, getAccessToken } from '@/lib/api'
 
 interface User {
   id: string
@@ -14,6 +14,7 @@ interface User {
   tax_id?: string
   gst_number?: string
   is_approved: boolean
+  created_at?: string
 }
 
 interface AuthContextType {
@@ -22,9 +23,10 @@ interface AuthContextType {
   loading: boolean
   login: (email: string, password: string) => Promise<{ otp_required?: boolean }>
   loginVerify: (email: string, otp: string) => Promise<void>
-  signup: (email: string, password: string, name: string) => Promise<{ otp_required?: boolean }>
+  signup: (email: string, password: string, name: string, acceptedTerms: boolean) => Promise<{ otp_required?: boolean }>
   signupVerify: (email: string, otp: string) => Promise<void>
   logout: () => void
+  deleteAccount: (password: string) => Promise<void>
   setUser: (user: User) => void
 }
 
@@ -35,13 +37,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const isLoggedIn = user !== null
 
-  // On mount — restore session from stored token
+  // On mount — restore session from stored token. Both branches resolve
+  // through the same promise chain (rather than an early synchronous
+  // return) so every setState call happens inside a .then/.catch/.finally
+  // callback, not directly in the effect body.
   useEffect(() => {
     const token = getAccessToken()
-    if (!token) { setLoading(false); return }
-
-    apiGetMe()
-      .then(setUser)
+    const restored = token ? apiGetMe() : Promise.resolve(null)
+    restored
+      .then((u) => { if (u) setUser(u) })
       .catch(() => { clearTokens() })
       .finally(() => setLoading(false))
   }, [])
@@ -55,8 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u)
   }
 
-  const signup = async (email: string, password: string, name: string) => {
-    return await apiRegister(email, password, name)
+  const signup = async (email: string, password: string, name: string, acceptedTerms: boolean) => {
+    return await apiRegister(email, password, name, acceptedTerms)
   }
 
   const signupVerify = async (email: string, otp: string) => {
@@ -69,8 +73,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
+  const deleteAccount = async (password: string) => {
+    await apiDeleteAccount(password)
+    setUser(null)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, loading, login, loginVerify, signup, signupVerify, logout, setUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, loading, login, loginVerify, signup, signupVerify, logout, deleteAccount, setUser }}>
       {children}
     </AuthContext.Provider>
   )

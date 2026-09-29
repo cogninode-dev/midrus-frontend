@@ -45,6 +45,22 @@ export default function ServicesPage() {
       .finally(() => setLoadingServices(false))
   }, [])
 
+  // File links are signed and expire (an hour by default). The View/Download
+  // anchors use the links from the last load, so refresh them periodically and
+  // whenever the tab comes back to the foreground.
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === 'hidden') return
+      apiGetServices().then(setServices).catch(() => {})
+    }
+    const timer = setInterval(refresh, 30 * 60 * 1000)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [])
+
   const handleServiceRequest = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmittingRequest(true)
@@ -168,8 +184,8 @@ export default function ServicesPage() {
           <div>
             <p className="font-semibold text-foreground">Account Pending Approval</p>
             <p className="text-sm text-foreground-secondary mt-1">
-              Your account is under review. Once our team approves it, you'll be able to request services.
-              You'll receive an email notification when approved.
+              Your account is under review. Once our team approves it, you&apos;ll be able to request services.
+              You&apos;ll receive an email notification when approved.
             </p>
           </div>
         </div>
@@ -360,7 +376,7 @@ export default function ServicesPage() {
                             <input
                               type="file"
                               multiple
-                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png"
                               onChange={(e) => handleFileUpload(service.id, e.target.files)}
                               className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
                               autoFocus
@@ -369,7 +385,7 @@ export default function ServicesPage() {
                               <Upload className="w-14 h-14 text-link mx-auto mb-3 group-hover:scale-110 transition-transform" />
                               <p className="text-sm font-semibold text-foreground mb-1">Drop PDFs here or click to browse</p>
                               <p className="text-xs text-foreground-secondary">Upload multiple documents at once</p>
-                              <p className="text-xs text-foreground-muted mt-2">Supports: PDF, DOC, DOCX, JPG, PNG</p>
+                              <p className="text-xs text-foreground-muted mt-2">Supports: PDF, DOC, DOCX, XLS, XLSX, CSV, JPG, PNG</p>
                             </div>
                           </div>
                         ) : (
@@ -450,7 +466,7 @@ export default function ServicesPage() {
                                     <label className="flex-1 relative flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-red-500 border border-red-500 rounded-lg hover:bg-red-600 transition-all duration-200 cursor-pointer">
                                       <input
                                         type="file"
-                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png"
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                         disabled={replacingDocId === invoice.id}
                                         onChange={(e) => handleReplace(service.id, invoice.id, e.target.files)}
@@ -505,7 +521,7 @@ export default function ServicesPage() {
               <div>
                 <h3 className="text-base font-bold text-foreground">Remove Document?</h3>
                 <p className="text-sm text-foreground-muted mt-1">
-                  Are you sure you want to remove <span className="font-semibold text-foreground break-all">"{confirmDelete.name}"</span>? This cannot be undone.
+                  Are you sure you want to remove <span className="font-semibold text-foreground break-all">&quot;{confirmDelete.name}&quot;</span>? This cannot be undone.
                 </p>
               </div>
             </div>

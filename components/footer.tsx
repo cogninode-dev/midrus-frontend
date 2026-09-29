@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="pt-2 space-y-2.5 text-xs text-grey-light leading-relaxed">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
-                <p>Plot No 601/7036, IGIT Road Sarang,<br />Sarang, Parjang, Dhenkanal - 600100,<br />Odisha, India.</p>
+                <p>Plot No 601/7036, IGIT Road Sarang,<br />Sarang, Parjang, Dhenkanal - 759146, <br />Odisha, India.</p>
               </div>
               <div className="flex items-center gap-2">
                 <Building2 className="w-3.5 h-3.5 text-accent shrink-0" />
@@ -33,8 +33,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Globe className="w-3.5 h-3.5 text-accent shrink-0" />
-                <a href="https://www.midrus.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                  www.midrus.com
+                <a href="https://www.midrusindia.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                  www.midrusindia.com
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -151,10 +151,10 @@ export default function Footer() {
               &copy; {currentYear} MIDRUS India Private Limited. All rights reserved.
             </p>
             <div className="flex gap-6 md:justify-end animate-fadeInUp" style={{ animationDelay: '0.5s' }}>
-              <Link href="#" className="hover:text-accent transition-colors duration-300 hover:underline">
+              <Link href="/legal/privacy" className="hover:text-accent transition-colors duration-300 hover:underline">
                 Privacy Policy
               </Link>
-              <Link href="#" className="hover:text-accent transition-colors duration-300 hover:underline">
+              <Link href="/legal/terms" className="hover:text-accent transition-colors duration-300 hover:underline">
                 Terms of Service
               </Link>
             </div>

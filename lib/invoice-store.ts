@@ -8,6 +8,8 @@ export interface InvoiceItem {
   amount: number
 }
 
+export type PaymentStatus = 'pending' | 'processing' | 'success' | 'failed'
+
 export interface InvoiceData {
   id: string
   invoiceNumber: string
@@ -25,6 +27,8 @@ export interface InvoiceData {
   uploadedPdfUrl: string | null
   notes: string
   date: string
+  paymentStatus: PaymentStatus
+  paymentStatusLabel: string
 }
 
 export const ADMIN_EMAILS = ['developer@cogninode.net', 'info@midrusindia.com', 'admin@midrusindia.com']

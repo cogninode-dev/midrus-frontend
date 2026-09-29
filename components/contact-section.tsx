@@ -72,7 +72,7 @@ export default function ContactSection() {
                 <p className="text-sm text-grey-light/70 mb-2 font-semibold uppercase tracking-wide">Address</p>
                 <p className="font-semibold text-grey-light leading-relaxed">
                   Plot No 601/7036, IGIT Road Sarang,<br />
-                  Sarang, Parjang, Dhenkanal - 600100,<br />
+                  Sarang, Parjang, Dhenkanal - 759146, <br />
                   Odisha, India.
                 </p>
               </div>

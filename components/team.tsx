@@ -57,10 +57,10 @@ export default function Team() {
                   <User className="w-8 h-8 text-foreground" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors duration-300">
+                  <h3 className="text-lg font-bold text-foreground group-hover:text-link transition-colors duration-300">
                     {member.name}
                   </h3>
-                  <p className="text-sm text-accent font-semibold">
+                  <p className="text-sm text-link font-semibold">
                     {member.role}
                   </p>
                 </div>

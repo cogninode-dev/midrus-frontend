@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search, ChevronDown, User, LogOut, ClipboardList, HelpCircle, Command, CreditCard } from 'lucide-react'
 import Image from 'next/image'
+import NotificationBell from '@/components/notification-bell'
 
 export default function DashboardNav() {
   const { user, logout } = useAuth()
@@ -89,7 +90,7 @@ export default function DashboardNav() {
     { label: 'View Profile', href: '/dashboard/profile', icon: User },
     { label: 'My Services', href: '/dashboard/services', icon: ClipboardList },
     { label: 'Make Payment', href: '/dashboard/payment', icon: CreditCard },
-    { label: 'Support', href: '#', icon: HelpCircle },
+    { label: 'Support', href: '/contact', icon: HelpCircle },
   ]
 
   return (
@@ -169,6 +170,8 @@ export default function DashboardNav() {
               </kbd>
             )}
           </form>
+
+          <NotificationBell />
 
           {/* User Menu */}
           <div className="relative" ref={dropdownRef}>

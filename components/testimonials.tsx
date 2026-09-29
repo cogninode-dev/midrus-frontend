@@ -46,7 +46,7 @@ export default function Testimonials() {
 
               {/* Quote */}
               <p className="text-base text-foreground mb-8 italic font-light leading-relaxed group-hover:text-foreground/90 transition-colors duration-300">
-                "{testimonial.quote}"
+                &quot;{testimonial.quote}&quot;
               </p>
 
               {/* Author Info */}

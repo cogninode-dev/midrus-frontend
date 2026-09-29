@@ -31,6 +31,7 @@ export default function SignupPage() {
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
   const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   // OTP step state
   const [otp, setOtp]           = useState('')
@@ -69,9 +70,10 @@ export default function SignupPage() {
     setError('')
     if (!emailValid)             { setError('Please enter a valid email address'); return }
     if (formData.password.length < 6) { setError('Password must be at least 6 characters'); return }
+    if (!acceptedTerms)          { setError('You must agree to the Terms of Service and Privacy Policy.'); return }
     setLoading(true)
     try {
-      const result = await signup(formData.email, formData.password, formData.name)
+      const result = await signup(formData.email, formData.password, formData.name, acceptedTerms)
       if (result?.otp_required) { setStep('otp'); setResendCooldown(60) }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed')
@@ -160,7 +162,7 @@ export default function SignupPage() {
             </form>
 
             <div className="mt-5 text-center">
-              <p className="text-sm text-foreground-muted mb-2">Didn't receive the email?</p>
+              <p className="text-sm text-foreground-muted mb-2">Didn&apos;t receive the email?</p>
               <button
                 onClick={handleResendOtp}
                 disabled={resendCooldown > 0}
@@ -262,20 +264,32 @@ export default function SignupPage() {
               )}
             </div>
 
+            <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-border-strong text-accent focus:ring-2 focus:ring-accent/40 shrink-0"
+              />
+              <span className="text-xs text-foreground-muted leading-relaxed">
+                I have read and agree to the{' '}
+                <Link href="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-link font-medium hover:underline">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-link font-medium hover:underline">
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+
             <button
               type="submit" disabled={loading}
-              className="w-full py-3 bg-accent text-foreground font-semibold rounded-lg hover:bg-accent-hover active:bg-accent-active disabled:bg-surface-3 disabled:text-foreground-muted disabled:cursor-not-allowed transition-all duration-200 mt-8 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-3 bg-accent text-foreground font-semibold rounded-lg hover:bg-accent-hover active:bg-accent-active disabled:bg-surface-3 disabled:text-foreground-muted disabled:cursor-not-allowed transition-all duration-200 mt-2 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Creating account…</> : 'Sign Up'}
             </button>
           </form>
-
-          <p className="mt-4 text-xs text-foreground-muted text-center leading-relaxed">
-            By signing up, you agree to our{' '}
-            <span className="text-link font-medium cursor-pointer hover:underline">Terms of Service</span>{' '}
-            and{' '}
-            <span className="text-link font-medium cursor-pointer hover:underline">Privacy Policy</span>
-          </p>
 
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
