@@ -92,7 +92,7 @@ export default function Hero() {
           </div>
 
           {/* Right Side — the real app, shown in a phone frame */}
-          <div className="hidden md:block animate-slideInLeft" aria-hidden="true">
+          <div className="animate-slideInLeft" aria-hidden="true">
             <PhoneMockup />
           </div>
         </div>

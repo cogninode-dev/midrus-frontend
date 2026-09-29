@@ -95,7 +95,7 @@ export default function PhoneMockup() {
                   className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
                   style={{ backgroundColor: APP.primary }}
                 >
-                  P
+                  J
                 </div>
               </div>
             </div>
