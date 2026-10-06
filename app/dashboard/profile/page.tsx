@@ -4,7 +4,7 @@ import { useAuth } from '@/app/auth-context'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, Save, X, Lock, Eye, EyeOff, FileEdit, CheckCircle, Calendar, Loader2, Pencil, FileText, ShieldCheck, AlertTriangle, Trash2 } from 'lucide-react'
-import { apiUpdateProfile, apiChangePassword } from '@/lib/api'
+import { apiUpdateProfile, apiChangePassword, apiUploadPhoto, apiRemovePhoto } from '@/lib/api'
 
 export default function ProfilePage() {
   const { user, setUser, deleteAccount } = useAuth()
@@ -15,6 +15,9 @@ export default function ProfilePage() {
   const [deletingAccount, setDeletingAccount] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const [photoError, setPhotoError] = useState('')
+  const [photoBroken, setPhotoBroken] = useState(false)
   const [profileError, setProfileError] = useState('')
   const [showChangePassword, setShowChangePassword] = useState(false)
   const [showCurrentPw, setShowCurrentPw] = useState(false)
@@ -82,6 +85,35 @@ export default function ProfilePage() {
       setProfileError(err instanceof Error ? err.message : 'Failed to save.')
     } finally {
       setSavingProfile(false)
+    }
+  }
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setPhotoError('Photo too large. Maximum size is 5 MB.'); return }
+    setPhotoBusy(true)
+    setPhotoError('')
+    try {
+      setUser(await apiUploadPhoto(file))
+      setPhotoBroken(false)
+    } catch (err: unknown) {
+      setPhotoError(err instanceof Error ? err.message : 'Failed to upload photo.')
+    } finally {
+      setPhotoBusy(false)
+    }
+  }
+
+  const handlePhotoRemove = async () => {
+    setPhotoBusy(true)
+    setPhotoError('')
+    try {
+      setUser(await apiRemovePhoto())
+    } catch (err: unknown) {
+      setPhotoError(err instanceof Error ? err.message : 'Failed to remove photo.')
+    } finally {
+      setPhotoBusy(false)
     }
   }
 
@@ -156,16 +188,47 @@ export default function ProfilePage() {
       {/* Profile Avatar & Basic Info */}
       <div className="bg-surface-1 border border-border rounded-2xl p-8 hover:border-border-strong transition-all duration-200 hover:shadow-sm">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          <div className="relative group/avatar cursor-pointer">
-            <div className="w-24 h-24 rounded-full bg-accent flex items-center justify-center text-5xl font-bold text-foreground shadow-lg shadow-accent/20">
-              {user?.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="absolute inset-0 w-24 h-24 rounded-full bg-foreground/40 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-200">
-              <Camera className="w-6 h-6 text-white" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-accent rounded-full flex items-center justify-center border-2 border-surface-1 shadow-sm">
-              <Camera className="w-3.5 h-3.5 text-foreground" />
-            </div>
+          <div className="flex flex-col items-center gap-2">
+            <label className="relative group/avatar cursor-pointer block">
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                className="sr-only"
+                onChange={handlePhotoChange}
+                disabled={photoBusy}
+                aria-label="Upload profile photo"
+              />
+              {user?.photo_url && !photoBroken ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.photo_url}
+                  alt="Profile photo"
+                  onError={() => setPhotoBroken(true)}
+                  className="w-24 h-24 rounded-full object-cover shadow-lg shadow-accent/20"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-accent flex items-center justify-center text-5xl font-bold text-foreground shadow-lg shadow-accent/20">
+                  {user?.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className={`absolute inset-0 w-24 h-24 rounded-full bg-foreground/40 flex items-center justify-center transition-opacity duration-200 ${photoBusy ? 'opacity-100' : 'opacity-0 group-hover/avatar:opacity-100'}`}>
+                {photoBusy ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white" />}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-accent rounded-full flex items-center justify-center border-2 border-surface-1 shadow-sm">
+                <Camera className="w-3.5 h-3.5 text-foreground" />
+              </div>
+            </label>
+            {user?.photo_url && (
+              <button
+                type="button"
+                onClick={handlePhotoRemove}
+                disabled={photoBusy}
+                className="text-xs font-medium text-foreground-muted hover:text-error transition-colors disabled:opacity-50"
+              >
+                Remove photo
+              </button>
+            )}
+            {photoError && <p className="text-xs text-error max-w-[10rem] text-center">{photoError}</p>}
           </div>
 
           <div className="flex-1">

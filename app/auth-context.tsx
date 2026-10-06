@@ -13,6 +13,7 @@ interface User {
   website?: string
   tax_id?: string
   gst_number?: string
+  photo_url?: string | null
   is_approved: boolean
   created_at?: string
 }

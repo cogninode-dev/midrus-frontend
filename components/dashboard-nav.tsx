@@ -12,6 +12,7 @@ export default function DashboardNav() {
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const [photoBroken, setPhotoBroken] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
@@ -182,9 +183,14 @@ export default function DashboardNav() {
               aria-expanded={showUserMenu}
               aria-haspopup="true"
             >
-              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-sm font-bold text-foreground">
-                {user?.name.charAt(0).toUpperCase()}
-              </div>
+              {user?.photo_url && !photoBroken ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.photo_url} alt="" onError={() => setPhotoBroken(true)} className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-sm font-bold text-foreground">
+                  {user?.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <span className="hidden sm:inline text-sm font-semibold text-foreground">{user?.name}</span>
               <ChevronDown
                 className={`w-4 h-4 text-foreground-muted transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}

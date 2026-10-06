@@ -191,6 +191,28 @@ export async function apiPasswordResetConfirm(email: string, otp: string, new_pa
   return data
 }
 
+export async function apiUploadPhoto(file: File) {
+  const token = getAccessToken()
+  const formData = new FormData()
+  formData.append('photo', file)
+  // Do NOT set Content-Type — browser sets multipart boundary automatically
+  const res = await fetch(`${BASE_URL}/profile/photo/`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json.error || 'Failed to upload photo.')
+  return json.user
+}
+
+export async function apiRemovePhoto() {
+  const res = await request('/profile/photo/', { method: 'DELETE' })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json.error || 'Failed to remove photo.')
+  return json.user
+}
+
 export async function apiChangePassword(current_password: string, new_password: string) {
   const res = await request('/password/change/', {
     method: 'POST',
