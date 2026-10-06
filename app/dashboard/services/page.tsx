@@ -24,6 +24,17 @@ interface Service {
   due_date: string
 }
 
+const SERVICE_OPTIONS = [
+  'Company Registration',
+  'GST Registration',
+  'GST Return Filing',
+  'Income Tax Return Filing',
+  'ESI & EPF Registration',
+  'ESI & EPF Return',
+  'TDS Return Filing',
+  'Others',
+]
+
 type FilterType = 'All' | 'Active' | 'Pending' | 'Requested' | 'Inactive'
 
 export default function ServicesPage() {
@@ -198,7 +209,7 @@ export default function ServicesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-foreground">Request a Service</h2>
-                <p className="text-sm text-foreground-muted mt-1">Admin will review and set the pricing</p>
+                <p className="text-sm text-foreground-muted mt-1">Your service will be activated instantly</p>
               </div>
               <button onClick={() => setShowRequestForm(false)} className="p-2 hover:bg-surface-2 rounded-lg transition-colors">
                 <X className="w-5 h-5 text-foreground-muted" />
@@ -211,7 +222,7 @@ export default function ServicesPage() {
                   <Send className="w-7 h-7 text-success" />
                 </div>
                 <p className="font-semibold text-foreground">Request submitted!</p>
-                <p className="text-sm text-foreground-muted text-center">Our team will review it and get back to you with pricing.</p>
+                <p className="text-sm text-foreground-muted text-center">Your service is now active. Our team will share pricing shortly.</p>
               </div>
             ) : (
               <form onSubmit={handleServiceRequest} method="POST" className="space-y-4">
@@ -220,14 +231,15 @@ export default function ServicesPage() {
                 )}
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Service Name <span className="text-error">*</span></label>
-                  <input
-                    type="text"
+                  <select
                     value={requestForm.name}
                     onChange={(e) => setRequestForm({ ...requestForm, name: e.target.value })}
-                    placeholder="e.g. GST Filing, Company Registration"
                     required
-                    className="w-full px-4 py-3 border border-border-strong rounded-lg bg-surface-1 text-foreground placeholder-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
-                  />
+                    className="w-full px-4 py-3 border border-border-strong rounded-lg bg-surface-1 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
+                  >
+                    <option value="" disabled>Select a service</option>
+                    {SERVICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Description</label>
