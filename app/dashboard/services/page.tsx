@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { ChevronDown, Upload, FileText, X, Lightbulb, Filter, Loader2, Plus, Clock, Send, Download, ShieldAlert, CheckCircle2, XCircle } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { apiGetServices, apiAddInvoice, apiDeleteInvoice, apiRequestService } from '@/lib/api'
 import { useAuth } from '@/app/auth-context'
 
@@ -231,15 +232,24 @@ export default function ServicesPage() {
                 )}
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Service Name <span className="text-error">*</span></label>
-                  <select
-                    value={requestForm.name}
-                    onChange={(e) => setRequestForm({ ...requestForm, name: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 border border-border-strong rounded-lg bg-surface-1 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
-                  >
-                    <option value="" disabled>Select a service</option>
-                    {SERVICE_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <Select value={requestForm.name} onValueChange={(v) => setRequestForm({ ...requestForm, name: v })}>
+                    <SelectTrigger
+                      className="!h-auto w-full px-4 py-3 rounded-lg border-border-strong bg-surface-1 text-foreground text-base shadow-none hover:bg-surface-2 data-[placeholder]:text-foreground-muted focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40 data-[state=open]:border-accent data-[state=open]:ring-2 data-[state=open]:ring-accent/40"
+                    >
+                      <SelectValue placeholder="Select a service" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[60] rounded-xl border-border bg-surface-1 text-foreground shadow-xl">
+                      {SERVICE_OPTIONS.map((o) => (
+                        <SelectItem
+                          key={o}
+                          value={o}
+                          className="rounded-lg px-3 py-2.5 text-sm focus:bg-accent-muted focus:text-foreground data-[state=checked]:font-semibold"
+                        >
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Description</label>

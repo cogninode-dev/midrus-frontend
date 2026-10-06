@@ -4,6 +4,7 @@ import { useAuth } from '@/app/auth-context'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, Save, X, Lock, Eye, EyeOff, FileEdit, CheckCircle, Calendar, Loader2, Pencil, FileText, ShieldCheck, AlertTriangle, Trash2 } from 'lucide-react'
+import PhotoCropper from '@/components/photo-cropper'
 import { apiUpdateProfile, apiChangePassword, apiUploadPhoto, apiRemovePhoto } from '@/lib/api'
 
 export default function ProfilePage() {
@@ -18,6 +19,7 @@ export default function ProfilePage() {
   const [photoBusy, setPhotoBusy] = useState(false)
   const [photoError, setPhotoError] = useState('')
   const [photoBroken, setPhotoBroken] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [profileError, setProfileError] = useState('')
   const [showChangePassword, setShowChangePassword] = useState(false)
   const [showCurrentPw, setShowCurrentPw] = useState(false)
@@ -88,18 +90,31 @@ export default function ProfilePage() {
     }
   }
 
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) { setPhotoError('Photo too large. Maximum size is 5 MB.'); return }
+    setPhotoError('')
+    if (!/^image\/(jpeg|png)$/.test(file.type)) { setPhotoError('Use a JPG or PNG image.'); return }
+    if (file.size > 15 * 1024 * 1024) { setPhotoError('That image is too large.'); return }
+    setCropSrc(URL.createObjectURL(file))
+  }
+
+  const closeCropper = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+  }
+
+  const handleCropDone = async (cropped: File) => {
     setPhotoBusy(true)
     setPhotoError('')
     try {
-      setUser(await apiUploadPhoto(file))
+      setUser(await apiUploadPhoto(cropped))
       setPhotoBroken(false)
+      closeCropper()
     } catch (err: unknown) {
       setPhotoError(err instanceof Error ? err.message : 'Failed to upload photo.')
+      closeCropper()
     } finally {
       setPhotoBusy(false)
     }
@@ -184,6 +199,8 @@ export default function ProfilePage() {
           )}
         </button>
       </div>
+
+      {cropSrc && <PhotoCropper src={cropSrc} onCancel={closeCropper} onDone={handleCropDone} />}
 
       {/* Profile Avatar & Basic Info */}
       <div className="bg-surface-1 border border-border rounded-2xl p-8 hover:border-border-strong transition-all duration-200 hover:shadow-sm">
