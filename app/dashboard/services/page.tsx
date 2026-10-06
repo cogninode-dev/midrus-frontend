@@ -46,6 +46,7 @@ export default function ServicesPage() {
   const [confirmDelete, setConfirmDelete] = useState<{ serviceId: number; invoiceId: number; name: string } | null>(null)
   const [showRequestForm, setShowRequestForm] = useState(false)
   const [requestForm, setRequestForm] = useState({ name: '', description: '' })
+  const [otherService, setOtherService] = useState('')
   const [submittingRequest, setSubmittingRequest] = useState(false)
   const [requestSuccess, setRequestSuccess] = useState(false)
   const [requestError, setRequestError] = useState('')
@@ -73,14 +74,20 @@ export default function ServicesPage() {
     }
   }, [])
 
+  const isOther = requestForm.name === 'Others'
+  // "Others" is saved with what the customer typed so the team knows what they need.
+  const serviceName = isOther ? `Others: ${otherService.trim()}` : requestForm.name
+  const canSubmit = !!requestForm.name && (!isOther || otherService.trim().length > 0)
+
   const handleServiceRequest = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmittingRequest(true)
     setRequestError('')
     try {
-      await apiRequestService(requestForm.name, requestForm.description)
+      await apiRequestService(serviceName, requestForm.description)
       setRequestSuccess(true)
       setRequestForm({ name: '', description: '' })
+      setOtherService('')
       // Refresh services list
       const updated = await apiGetServices()
       setServices(updated)
@@ -166,21 +173,21 @@ export default function ServicesPage() {
   return (
     <div className="space-y-8 animate-fadeInUp">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">Services</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-2 min-w-0">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Services</h1>
           <p className="text-foreground-secondary">Manage your services and upload documents</p>
         </div>
         {isApproved ? (
           <button
             onClick={() => { setShowRequestForm(true); setRequestError(''); setRequestSuccess(false) }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-foreground font-semibold rounded-xl hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm"
+            className="flex w-full sm:w-auto items-center justify-center gap-2 px-5 py-2.5 bg-accent text-foreground font-semibold rounded-xl hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Request a Service
           </button>
         ) : (
-          <span className="flex items-center gap-2 px-5 py-2.5 bg-surface-2 text-foreground-muted font-semibold rounded-xl border border-border cursor-not-allowed text-sm">
+          <span className="flex w-full sm:w-auto items-center justify-center gap-2 px-5 py-2.5 bg-surface-2 text-foreground-muted font-semibold rounded-xl border border-border cursor-not-allowed text-sm">
             <Plus className="w-4 h-4" />
             Request a Service
           </span>
@@ -251,6 +258,21 @@ export default function ServicesPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                {isOther && (
+                  <div>
+                    <label htmlFor="other-service" className="block text-sm font-semibold text-foreground mb-2">Please specify the service <span className="text-error">*</span></label>
+                    <input
+                      id="other-service"
+                      type="text"
+                      value={otherService}
+                      onChange={(e) => setOtherService(e.target.value)}
+                      placeholder="e.g. Trademark registration"
+                      maxLength={120}
+                      required
+                      className="w-full px-4 py-3 border border-border-strong rounded-lg bg-surface-1 text-foreground placeholder-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Description</label>
                   <textarea
@@ -264,7 +286,7 @@ export default function ServicesPage() {
                 <div className="flex gap-3 pt-2">
                   <button
                     type="submit"
-                    disabled={submittingRequest || !requestForm.name.trim()}
+                    disabled={submittingRequest || !canSubmit}
                     className="flex-1 py-3 bg-accent text-foreground font-semibold rounded-lg hover:bg-accent-hover disabled:bg-surface-3 disabled:text-foreground-muted disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
                   >
                     {submittingRequest ? <><Loader2 className="w-4 h-4 animate-spin" />Submitting…</> : <><Send className="w-4 h-4" />Submit Request</>}
@@ -335,8 +357,8 @@ export default function ServicesPage() {
                 className="w-full p-6 text-left hover:bg-surface-2/50 transition-colors cursor-pointer"
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
                       <h3 className="text-xl font-bold text-foreground group-hover:text-link transition-colors">
                         {service.name}
                       </h3>
